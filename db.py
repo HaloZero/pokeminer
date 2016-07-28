@@ -5,7 +5,7 @@ import time
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.sql import not_
 
 
@@ -18,6 +18,8 @@ try:
     DB_ENGINE = config.DB_ENGINE
 except ImportError, AttributeError:
     DB_ENGINE = 'sqlite:///db.sqlite'
+
+
 
 
 def get_engine():
@@ -114,8 +116,8 @@ def add_sighting(session, pokemon):
         spawn_id=pokemon['spawn_id'],
         expire_timestamp=pokemon['expire_timestamp'],
         normalized_timestamp=normalize_timestamp(pokemon['expire_timestamp']),
-        lat=pokemon['lat'],
-        lon=pokemon['lon'],
+        lat=str(pokemon['lat']),
+        lon=str(pokemon['lon']),
     )
     # Check if there isn't the same entry already
     if obj in CACHE:

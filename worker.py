@@ -178,6 +178,7 @@ class Slave(threading.Thread):
                             continue
                         pokemons.append(self.normalize_pokemon(pokemon, now))
             for raw_pokemon in pokemons:
+                print("found pokemon ", raw_pokemon)
                 db.add_sighting(session, raw_pokemon)
                 self.seen_per_cycle += 1
                 self.total_seen += 1
