@@ -247,15 +247,24 @@ def pokestop():
     session = db.Session()
     pokestops = db.get_all_pokestops(session)
     session.close()
-
+    args = request.args
     for pokestop in pokestops:
-        pokestops_json.append({
-            'lat': pokestop.lat,
-            'lng': pokestop.lon,
-            'id': pokestop.id
-        })
+        if not args or in_area(pokestop, **args):
+            pokestops_json.append({
+                'lat': pokestop.lat,
+                'lng': pokestop.lon,
+                'id': pokestop.id
+            })
 
     return json.dumps({'pokestops': pokestops_json})
+
+
+def in_area(pokestop, **kwargs):
+    min_lat = kwargs.get('min_lat')[0]
+    max_lat = kwargs.get('max_lng')[0]
+    min_lng = kwargs.get('min_lat')[0]
+    max_lng = kwargs.get('max_lng')[0]
+    return min_lat <= pokestop.lat and max_lat >= pokestop.lon and min_lng <= pokestop.lat and max_lng >= pokestop.lon
 
 @app.route('/report/heatmap')
 def report_heatmap():
