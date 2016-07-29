@@ -90,6 +90,9 @@ def fullmap():
 def get_pokemarkers():
     markers = []
 
+    show_pokestops = request.args['pokestops'] != None
+    show_gyms = request.args['gyms'] != None
+
     total_workers = app_config.GRID[0] * app_config.GRID[1]
     for worker_no in range(total_workers):
         coords = utils.get_start_coords(worker_no)
@@ -105,11 +108,9 @@ def get_pokemarkers():
 
     session = db.Session()
     pokemons = db.get_sightings(session)
-    pokestops = db.get_all_pokestops(session)
-    gyms = db.get_all_gyms(session)
+    pokestops = db.get_all_pokestops(session) if show_pokestops else []
+    gyms = db.get_all_gyms(session) if show_gyms else []
     session.close()
-
-    print "t"
     
     for gym in gyms:
         markers.append({
@@ -288,6 +289,8 @@ def pokemon():
                 continue
             pokemon_json.append(serialize_pokemon(pokemon))
 
+    if pokemon_id and len(pokemon_json) == 0:
+        pokemon_json.append(serialize_fake_pokemon(pokemon_id, pokemons))
     return json.dumps({'pokemon': pokemon_json})
 
 def serialize_pokemon(pokemon):
@@ -300,6 +303,16 @@ def serialize_pokemon(pokemon):
         'disappear_time': pokemon.expire_timestamp,
         'pokemon_id': pokemon.pokemon_id
     }
+
+def serialize_fake_pokemon(pokemon_id, pokemons):
+    for pokemon in pokemons:
+        if float(pokemon.lat) < 38 and abs(float(pokemon.lon)) > 122.4052203122:
+            pokemon_json = serialize_pokemon(pokemon)
+            pokemon_json['id'] = pokemon_id
+            name = pokemon_names[str(pokemon_id)]
+            pokemon_json['name'] = name
+            return pokemon_json
+
 
 def in_area(pokestop, args):
     min_lat = args.get('min_lat')
