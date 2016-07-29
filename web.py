@@ -243,7 +243,7 @@ def sighting_to_marker(sighting):
         'lon': sighting.lon,
     }
 
-@app.route('/api/pokestops')
+@app.route('/api/pokestops/')
 def pokestop():
     pokestops_json = []
     session = db.Session()
@@ -251,7 +251,7 @@ def pokestop():
     session.close()
     args = request.args
     for pokestop in pokestops:
-        if not args or in_area(pokestop, **args):
+        if not args or in_area(pokestop, args):
             pokestops_json.append({
                 'lat': pokestop.lat,
                 'lng': pokestop.lon,
@@ -260,12 +260,63 @@ def pokestop():
 
     return json.dumps({'pokestops': pokestops_json})
 
+@app.route('/api/pokemon/')
+def pokemon():
+    pokemon_json = []
+    session = db.Session()
+    pokemons = db.get_all_sightings(session, range(1,151))
+    session.close()
+    args = request.args
+    for pokemon in pokemons:
+        if not args or in_area(pokemon, args):
+            pokemon_json.append(serialize_pokemon(pokemon))
 
-def in_area(pokestop, **kwargs):
-    min_lat = kwargs.get('min_lat')[0]
-    max_lat = kwargs.get('max_lng')[0]
-    min_lng = kwargs.get('min_lat')[0]
-    max_lng = kwargs.get('max_lng')[0]
+    return json.dumps({'pokemon': pokemon_json})
+
+@app.route('/api/pokemon-search/')
+def pokemon_search():
+    args = request.args
+
+    pokemon_id = int(args.get('pokemon_id', '0'))
+    pokemon_name = args.get('pokemon_name', '')
+    
+    session = db.Session()
+    pokemons = db.get_all_sightings(session, range(1,151))
+    session.close()
+
+    pokemon_found = {}
+    for pokemon in pokemons:
+        if not args or in_area(pokemon, args):
+            name = pokemon_names[str(pokemon.pokemon_id)]
+            # import pdb; pdb.set_trace()
+            if pokemon_id == pokemon.pokemon_id:
+                pokemon_found = serialize_pokemon(pokemon)
+                break
+            elif pokemon_name == name:
+                pokemon_found = serialize_pokemon(pokemon)
+                break
+
+    return json.dumps({'pokemon': pokemon_found})
+
+
+def serialize_pokemon(pokemon):
+    name = pokemon_names[str(pokemon.pokemon_id)]
+    return {
+        'lat': pokemon.lat,
+        'lng': pokemon.lon,
+        'id': pokemon.id,
+        'name': name,
+        'disappear_time': pokemon.expire_timestamp,
+        'pokemon_id': pokemon.pokemon_id
+    }
+
+def in_area(pokestop, args):
+    min_lat = args.get('min_lat')
+    max_lat = args.get('max_lat')
+    min_lng = args.get('min_lng')
+    max_lng = args.get('max_lng')
+    if min_lat == None or min_lng == None or max_lat == None and max_lng == None:
+        return True 
     return min_lat <= pokestop.lat and max_lat >= pokestop.lon and min_lng <= pokestop.lat and max_lng >= pokestop.lon
 
 @app.route('/report/heatmap')

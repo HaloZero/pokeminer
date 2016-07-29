@@ -3,3 +3,4 @@
 db.sqlite
 *.log
 .DS_Store
+secrets.py
