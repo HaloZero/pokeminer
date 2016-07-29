@@ -109,6 +109,8 @@ def get_pokemarkers():
     gyms = db.get_all_gyms(session)
     session.close()
 
+    print "t"
+    
     for gym in gyms:
         markers.append({
             'type': 'pokestop',
