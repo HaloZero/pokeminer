@@ -1,2 +1,2 @@
-web: python web.py -P 80
+web: python web.py
 worker: python worker.py
