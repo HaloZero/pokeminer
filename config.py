@@ -7,7 +7,7 @@ DB_ENGINE = os.environ.get('DATABASE_URL', '') or 'postgresql://localhost'  # an
 # SF
 MAP_START = (37.8104085,-122.5252033)
 MAP_END = (37.7064505,-122.3559452)
-GRID = (1, 1)  # row, column
+
 
 # LAT_GAIN and LON_GAIN can be configured to tell how big a space between
 # points visited by worker should be. LAT_GAIN should also compensate for
@@ -18,11 +18,17 @@ LON_GAIN = 0.0025
 ACCOUNTS = [
     # username, password, service (google/ptc)
 ]
-
+	
 for key in os.environ.keys():
 	if 'ACCOUNT_' in key:
 		ACCOUNTS.append((os.environ[key], 'password1', 'ptc'))
 
+if len(ACCOUNTS) == 1:
+    GRID = (1, 1)  # row, column
+else:
+    grid_rows = len(ACCOUNTS)/2
+    grid_columns = 2
+    GRID = (grid_rows, grid_columns) # row, column
 
 # Trash Pokemon won't be shown on the live map.
 # Their data will still be collected to the database.

@@ -583,8 +583,9 @@ def add_forts_to_db(forts):
     session = db.Session()
     for fort in forts:
         db.add_fort(session, fort)
-    session.commit()
+        session.commit()
     session.close()
+    
 
 
 def get_status_message(workers, count, start_time, points_stats):

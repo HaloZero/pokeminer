@@ -62,8 +62,8 @@ def add_sighting(session, spawn_id, pokemon):
         spawn_id=spawn_id,
         expire_timestamp=pokemon['disappear_time'],
         normalized_timestamp=normalize_timestamp(pokemon['disappear_time']),
-        lat=pokemon['lat'],
-        lon=pokemon['lng'],
+        lat=str(pokemon['lat']),
+        lon=str(pokemon['lng']),
     )
     # Check if there isn't the same entry already
     existing = session.query(Sighting) \
@@ -191,7 +191,6 @@ def add_fort(session, fort):
     # Check if there isn't the same entry already
     existing = session.query(Fort) \
         .filter(Fort.id == obj.id) \
-        .filter(Fort.enabled == obj.enabled) \
         .first()
     if existing:
         return
