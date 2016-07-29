@@ -262,42 +262,29 @@ def pokestop():
 
 @app.route('/api/pokemon/')
 def pokemon():
+    args = request.args
+
     pokemon_json = []
-    session = db.Session()
-    pokemons = db.get_all_sightings(session, range(1,151))
-    session.close()
-    args = request.args
-    for pokemon in pokemons:
-        if not args or in_area(pokemon, args):
-            pokemon_json.append(serialize_pokemon(pokemon))
-
-    return json.dumps({'pokemon': pokemon_json})
-
-@app.route('/api/pokemon-search/')
-def pokemon_search():
-    args = request.args
-
+    
     pokemon_id = int(args.get('pokemon_id', '0'))
     pokemon_name = args.get('pokemon_name', '')
-    
+
     session = db.Session()
     pokemons = db.get_all_sightings(session, range(1,151))
     session.close()
-
-    pokemon_found = {}
+    
     for pokemon in pokemons:
         if not args or in_area(pokemon, args):
             name = pokemon_names[str(pokemon.pokemon_id)]
-            # import pdb; pdb.set_trace()
             if pokemon_id == pokemon.pokemon_id:
-                pokemon_found = serialize_pokemon(pokemon)
+                pokemon_json = serialize_pokemon(pokemon)
                 break
             elif pokemon_name == name:
-                pokemon_found = serialize_pokemon(pokemon)
+                pokemon_json = serialize_pokemon(pokemon)
                 break
+            pokemon_json.append(serialize_pokemon(pokemon))
 
-    return json.dumps({'pokemon': pokemon_found})
-
+    return json.dumps({'pokemon': pokemon_json})
 
 def serialize_pokemon(pokemon):
     name = pokemon_names[str(pokemon.pokemon_id)]
