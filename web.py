@@ -251,7 +251,7 @@ def pokestop():
     session.close()
     args = request.args
     for pokestop in pokestops:
-        if not args or in_area(pokestop, **args):
+        if not args or in_area(pokestop, args):
             pokestops_json.append({
                 'lat': pokestop.lat,
                 'lng': pokestop.lon,
@@ -268,7 +268,7 @@ def pokemon():
     session.close()
     args = request.args
     for pokemon in pokemons:
-        if not args or in_area(pokemon, **args):
+        if not args or in_area(pokemon, args):
             pokemon_json.append(serialize_pokemon(pokemon))
 
     return json.dumps({'pokemon': pokemon_json})
@@ -276,6 +276,7 @@ def pokemon():
 @app.route('/api/pokemon-search/')
 def pokemon_search():
     args = request.args
+
     pokemon_id = int(args.get('pokemon_id', '0'))
     pokemon_name = args.get('pokemon_name', '')
     
@@ -285,7 +286,7 @@ def pokemon_search():
 
     pokemon_found = {}
     for pokemon in pokemons:
-        if not args or in_area(pokemon, **args):
+        if not args or in_area(pokemon, args):
             name = pokemon_names[str(pokemon.pokemon_id)]
             # import pdb; pdb.set_trace()
             if pokemon_id == pokemon.pokemon_id:
@@ -309,12 +310,12 @@ def serialize_pokemon(pokemon):
         'pokemon_id': pokemon.pokemon_id
     }
 
-def in_area(pokestop, **kwargs):
-    min_lat = kwargs.get('min_lat')
-    max_lat = kwargs.get('max_lat')
-    min_lng = kwargs.get('min_lng')
-    max_lng = kwargs.get('max_lng')
-    if min_lat == None and min_lng == None:
+def in_area(pokestop, args):
+    min_lat = args.get('min_lat')
+    max_lat = args.get('max_lat')
+    min_lng = args.get('min_lng')
+    max_lng = args.get('max_lng')
+    if min_lat == None or min_lng == None or max_lat == None and max_lng == None:
         return True 
     return min_lat <= pokestop.lat and max_lat >= pokestop.lon and min_lng <= pokestop.lat and max_lng >= pokestop.lon
 
