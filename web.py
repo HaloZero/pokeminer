@@ -266,8 +266,10 @@ def pokemon():
 
     pokemon_json = []
     
-    pokemon_id = int(args.get('pokemon_id', '0'))
-    pokemon_name = args.get('pokemon_name', '')
+    pokemon_id = args.get('pokemon_id')
+    if pokemon_id:
+        pokemon_id = int(pokemon_id)
+    pokemon_name = args.get('pokemon_name')
 
     session = db.Session()
     pokemons = db.get_all_sightings(session, range(1,151))
@@ -276,12 +278,14 @@ def pokemon():
     for pokemon in pokemons:
         if not args or in_area(pokemon, args):
             name = pokemon_names[str(pokemon.pokemon_id)]
-            if pokemon_id == pokemon.pokemon_id:
-                pokemon_json = serialize_pokemon(pokemon)
-                break
-            elif pokemon_name == name:
-                pokemon_json = serialize_pokemon(pokemon)
-                break
+            if pokemon_id:
+                if pokemon_id == pokemon.pokemon_id:
+                    pokemon_json.append(serialize_pokemon(pokemon))
+                continue
+            if pokemon_name:
+                if pokemon_name == name:
+                    pokemon_json.append(serialize_pokemon(pokemon))
+                continue
             pokemon_json.append(serialize_pokemon(pokemon))
 
     return json.dumps({'pokemon': pokemon_json})
