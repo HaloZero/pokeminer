@@ -15,6 +15,9 @@ MAP_END = (37.7751384,-122.3875391)  # bottom right corner
 LAT_GAIN = 0.0015
 LON_GAIN = 0.0025
 
+AREA_NAME = 'lyft'
+REPORT_SINCE = None
+
 CYCLES_PER_WORKER = 3
 
 ACCOUNTS = [
