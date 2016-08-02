@@ -2,7 +2,6 @@ from datetime import datetime
 import argparse
 import json
 import threading
-import pokemon_pb2
 import time
 
 import urllib
