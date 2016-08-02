@@ -155,6 +155,14 @@ def create_app():
     GoogleMaps(app, key=GOOGLEMAPS_KEY)
     return app
 
+# for flask heroku
+with open('credentials.json') as f:
+    credentials = json.load(f)
+
+GOOGLEMAPS_KEY = credentials.get('gmaps_key', None)
+AUTO_REFRESH = 45  # refresh map every X s
+app = create_app()
+
 @app.route('/')
 def fullmap():
     return render_template(
@@ -244,8 +252,6 @@ def get_map():
         zoom='15',
     )
     return fullmap
-
-app = create_app()
 
 if __name__ == '__main__':
 	spawn_workers(workers)
