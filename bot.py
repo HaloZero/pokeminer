@@ -257,4 +257,5 @@ if __name__ == '__main__':
 	spawn_workers(workers)
 	args = get_args()
 	port = int(os.environ.get('PORT', 5000))
+	print("Port is ", port)
 	app.run(debug=True, threaded=True, host=args.host, port=port)
