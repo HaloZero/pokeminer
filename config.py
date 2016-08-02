@@ -23,14 +23,7 @@ ACCOUNTS = [
     ['PokeHack07', 'password1', 'ptc'],
     ['PokeHack08', 'password1', 'ptc'],
     ['PokeHack10', 'password1', 'ptc'],
-    # ['PokeHack12', 'password1', 'ptc'],
-    # ['PokeHack14', 'password1', 'ptc'],
-    # ['PokeHack15', 'password1', 'ptc'],
-    # ['PokeHack16', 'password1', 'ptc'],
-    # ['PokeHack17', 'password1', 'ptc'],
-    # ['PokeHack18', 'password1', 'ptc'],
-    # ['PokeHack19', 'password1', 'ptc'],
-    # ['PokeHack20', 'password1', 'ptc']
+    # last are 12, 14, 15->20
 ]
 	
 for key in os.environ.keys():
