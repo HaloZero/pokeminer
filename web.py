@@ -398,7 +398,7 @@ def send_to_slack(text, username, icon_emoji, webhook):
     ack = r.read()
 
 @app.route('/start')
-def start_worker():
+def start_worker_app():
     spawn_workers(workers)
     return json.dumps({})
 
