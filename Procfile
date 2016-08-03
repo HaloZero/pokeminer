@@ -1,2 +1,2 @@
 web: gunicorn web:app
-worker: python worker.py
+worker: python worker.py --no-status-bar
