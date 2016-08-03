@@ -108,6 +108,7 @@ class Slave(threading.Thread):
         service = config.ACCOUNTS[self.worker_no][2]
         while True:
             try:
+                print(config.ACCOUNTS[self.worker_no])
                 self.api.login(
                     provider=service,
                     username=config.ACCOUNTS[self.worker_no][0],
