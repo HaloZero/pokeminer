@@ -4,6 +4,7 @@ DB_ENGINE = os.environ.get('DATABASE_URL', '') or 'postgresql://localhost'  # an
 MAP_START = (37.7772924,-122.3964870)  # top left corner
 MAP_END = (37.7751384,-122.3875391)  # bottom right corner
 
+OVERRIDE_LOCATION = None
 # SF
 # MAP_START = (37.8104085,-122.5252033)
 # MAP_END = (37.7064505,-122.3559452)

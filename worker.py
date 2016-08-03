@@ -7,6 +7,10 @@ import random
 import sys
 import threading
 import time
+import json
+
+import urllib
+import httplib
 
 from pgoapi import (
     exceptions as pgoapi_exceptions,
@@ -37,6 +41,17 @@ for setting_name in REQUIRED_SETTINGS:
 
 workers = {}
 local_data = threading.local()
+
+with open('locales/pokemon.en.json') as f:
+    pokemon_names = json.load(f)
+
+global slack_webhook_urlpath
+slack_webhook_urlpath = "https://hooks.slack.com/services/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"
+
+global pokemon_icons_prefix
+pokemon_icons_prefix = ":pokemon-"
+
+boring_pokemon_id = [41, 16, 19, 23, 29, 32, 10, 13, 21, 43, 46, 52, 54, 60, 69, 72, 98, 109, 116, 118, 120, 129, 133]
 
 
 class CannotProcessStep(Exception):
@@ -146,6 +161,48 @@ class Slave(threading.Thread):
         self.error_code = 'RESTART'
         self.restart()
 
+
+    def unix_time_millis(dt):
+        epoch = datetime.utcfromtimestamp(0)
+        return (dt - epoch).total_seconds()
+
+    def send_pokemon_to_slack(self, pokemon):
+        pokename = pokemon_names[str(pokemon.pokemon_id)]
+
+        disappear_datetime = datetime.fromtimestamp(pokemon.expire_timestamp)
+        time_till_disappears = disappear_datetime - datetime.now()
+        disappear_hours, disappear_remainder = divmod(time_till_disappears.seconds, 3600)
+        disappear_minutes, disappear_seconds = divmod(disappear_remainder, 60)
+        disappear_minutes = str(disappear_minutes)
+        disappear_seconds = str(disappear_seconds)
+        if len(disappear_seconds) == 1:
+            disappear_seconds = str(0) + disappear_seconds
+        disappear_time = disappear_datetime.strftime("%H:%M:%S")
+
+        alert_text = 'I\'m just <http://mygeoposition.com/?q=' + str(pokemon.lat) + ',' + str(pokemon.lon) + '>' + \
+                     '|' + ' until ' + disappear_time + \
+                    ' (' + disappear_minutes + ':' + disappear_seconds + ')!'
+
+        if pokemon_icons_prefix != ':pokeball:':
+            user_icon = pokemon_icons_prefix + pokename.lower() + ':'
+        else:
+            user_icon = ':pokeball:'
+
+        self.send_to_slack(alert_text, pokename, user_icon, slack_webhook_urlpath)
+
+    def send_to_slack(self, text, username, icon_emoji, webhook):
+        data = urllib.urlencode({'payload': '{"username": "' + username + '", '
+                                            '"icon_emoji": "' + icon_emoji + '", '
+                                            '"text": "' + text + '"}'
+                                 })
+        print username, icon_emoji, webhook
+
+        h = httplib.HTTPSConnection('hooks.slack.com')
+        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+
+        h.request('POST', webhook, data, headers)
+        r = h.getresponse()
+        ack = r.read()
     def main(self):
         """Heart of the worker - goes over each point and reports sightings"""
         session = db.Session()
@@ -178,8 +235,14 @@ class Slave(threading.Thread):
                             continue
                         pokemons.append(self.normalize_pokemon(pokemon, now))
             for raw_pokemon in pokemons:
-                print("found pokemon ", raw_pokemon)
-                db.add_sighting(session, raw_pokemon)
+                pokename = pokemon_names[str(raw_pokemon['pokemon_id'])]
+                print("Found pokemon {}, at lat: {}/lon: {}. Spawn id: {}".format(pokename, raw_pokemon['lat'], raw_pokemon['lon'], raw_pokemon['spawn_id']))
+                new_pokemon = db.add_sighting(session, raw_pokemon)
+                if new_pokemon:
+                    if new_pokemon.pokemon_id not in boring_pokemon_id:
+                        print("sending pokemon to slack", new_pokemon)
+                        self.send_pokemon_to_slack(new_pokemon)
+
                 self.seen_per_cycle += 1
                 self.total_seen += 1
             logger.info('Point processed, %d Pokemons seen!', len(pokemons))

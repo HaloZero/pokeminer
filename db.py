@@ -121,7 +121,7 @@ def add_sighting(session, pokemon):
     )
     # Check if there isn't the same entry already
     if obj in CACHE:
-        return
+        return None
     existing = session.query(Sighting) \
         .filter(Sighting.pokemon_id == obj.pokemon_id) \
         .filter(Sighting.spawn_id == obj.spawn_id) \
@@ -131,9 +131,10 @@ def add_sighting(session, pokemon):
         .filter(Sighting.lon == obj.lon) \
         .first()
     if existing:
-        return
+        return None
     session.add(obj)
     CACHE.add(obj)
+    return obj
 
 
 def get_sightings(session):

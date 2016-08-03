@@ -89,11 +89,11 @@ def workers_data():
 @app.route('/config')
 def config():
     """Gets the settings for the Google Maps via REST"""
-    map_center = utils.get_map_center()
+    map_center = get_map_center()
     return json.dumps({
         'lat': map_center[0],
         'lng': map_center[1],
-        'zoom': 15,
+        'zoom': 17,
         'identifier': 'fullmap'
     })
 
@@ -178,7 +178,12 @@ def get_worker_markers():
 
 
 def get_map():
-    map_center = utils.get_map_center()
+    if request.args.get('lat') and request.args.get('lat'):
+        map_center = float(request.args.get('lat')), float(request.args.get('lon'))
+        app_config.OVERRIDE_LOCATION = map_center
+    else:
+        app_config.OVERRIDE_LOCATION = None
+    map_center = get_map_center()
     fullmap = Map(
         identifier='fullmap2',
         style='height:100%;width:100%;top:0;left:0;position:absolute;z-index:200;',
@@ -189,6 +194,12 @@ def get_map():
     )
     return fullmap
 
+def get_map_center():
+    if app_config.OVERRIDE_LOCATION:
+        map_center = app_config.OVERRIDE_LOCATION
+    else:
+        map_center = utils.get_map_center()
+    return map_center
 
 @app.route('/report')
 def report_main():
@@ -372,7 +383,7 @@ def send_pokemon_to_slack(pokemon):
         disappear_seconds = str(0) + disappear_seconds
     disappear_time = disappear_datetime.strftime("%H:%M:%S")
 
-    alert_text = 'I\'m just <http://mygeoposition.com/?q=' + str(pokemon.lat) + ',' + str(pokemon.lon) + '>' + \
+    alert_text = 'I\'m just <http://https://poke-slack-rohan.herokuapp.com/?lat=' + str(pokemon.lat) + '&lon=' + str(pokemon.lon) + '>' + \
                  '|' + ' until ' + disappear_time + \
                 ' (' + disappear_minutes + ':' + disappear_seconds + ')!'
 
