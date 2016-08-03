@@ -24,9 +24,9 @@ CYCLES_PER_WORKER = 3
 ACCOUNTS = [
     # username, password, service (google/ptc)
     ['PokeHack06', 'password1', 'ptc'],
-    # ['PokeHack07', 'password1', 'ptc'],
-    # ['PokeHack08', 'password1', 'ptc'],
-    # ['PokeHack10', 'password1', 'ptc'],
+    ['PokeHack07', 'password1', 'ptc'],
+    ['PokeHack08', 'password1', 'ptc'],
+    ['PokeHack10', 'password1', 'ptc'],
     # last are 12, 14, 15->20
 ]
 	

@@ -108,7 +108,6 @@ class Slave(threading.Thread):
         service = config.ACCOUNTS[self.worker_no][2]
         while True:
             try:
-                print(config.ACCOUNTS[self.worker_no])
                 self.api.login(
                     provider=service,
                     username=config.ACCOUNTS[self.worker_no][0],
@@ -196,7 +195,6 @@ class Slave(threading.Thread):
                                             '"icon_emoji": "' + icon_emoji + '", '
                                             '"text": "' + text + '"}'
                                  })
-        print username, icon_emoji, webhook
 
         h = httplib.HTTPSConnection('hooks.slack.com')
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
