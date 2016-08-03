@@ -51,7 +51,7 @@ slack_webhook_urlpath = "https://hooks.slack.com/services/T1KDCNT9R/B1UEEPK7D/ak
 global pokemon_icons_prefix
 pokemon_icons_prefix = ":pokemon-"
 
-boring_pokemon_id = [41, 16, 19, 23, 29, 32, 10, 13, 21, 43, 46, 52, 54, 60, 69, 72, 98, 109, 116, 118, 120, 129, 133]
+boring_pokemon_id = [10, 13, 16, 17, 19, 20, 21, 23, 29, 32, 41, 43, 46, 48, 52, 54, 60, 69, 72, 98, 109, 116, 118, 120, 129, 133]
 
 
 class CannotProcessStep(Exception):

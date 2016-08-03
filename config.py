@@ -1,5 +1,5 @@
 import os
-DB_ENGINE = os.environ.get('DATABASE_URL', '') or 'postgresql://localhost'  # anything SQLAlchemy accepts
+DB_ENGINE = os.environ.get('DATABASE_URL', '') or 'sqlite:///db.sqlite'  # anything SQLAlchemy accepts
 # the office
 MAP_START = (37.7772924,-122.3964870)  # top left corner
 MAP_END = (37.7751384,-122.3875391)  # bottom right corner
