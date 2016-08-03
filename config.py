@@ -23,16 +23,16 @@ CYCLES_PER_WORKER = 3
 
 ACCOUNTS = [
     # username, password, service (google/ptc)
-    ['PokeHack06', 'password1', 'ptc'],
-    ['PokeHack07', 'password1', 'ptc'],
-    ['PokeHack08', 'password1', 'ptc'],
-    ['PokeHack10', 'password1', 'ptc'],
+    # ['PokeHack06', 'password1', 'ptc'],
+    # ['PokeHack07', 'password1', 'ptc'],
+    # ['PokeHack08', 'password1', 'ptc'],
+    # ['PokeHack10', 'password1', 'ptc'],
     # last are 12, 14, 15->20
 ]
 	
-# for key in os.environ.keys():
-# 	if 'ACCOUNT_' in key:
-# 		ACCOUNTS.append((os.environ[key], 'password1', 'ptc'))
+for key in os.environ.keys():
+	if 'ACCOUNT_' in key:
+		ACCOUNTS.append((os.environ[key], 'password1', 'ptc'))
 
 if len(ACCOUNTS) == 1:
     GRID = (1, 1)  # row, column
